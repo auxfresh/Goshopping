@@ -10,7 +10,7 @@ export default function Landing() {
           <div className="flex items-center justify-between h-16">
             <h1 className="text-2xl font-bold text-primary">Goshopping</h1>
             <Button asChild>
-              <a href="/api/login">Sign In</a>
+              <a href="/login">Sign In</a>
             </Button>
           </div>
         </div>
@@ -30,7 +30,7 @@ export default function Landing() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100">
-                  <a href="/api/login">Shop Now</a>
+                  <a href="/login">Shop Now</a>
                 </Button>
                 <Button 
                   asChild 
@@ -38,7 +38,7 @@ export default function Landing() {
                   size="lg" 
                   className="border-white text-white hover:bg-white hover:text-primary"
                 >
-                  <a href="/api/login">Become a Vendor</a>
+                  <a href="/register">Become a Vendor</a>
                 </Button>
               </div>
             </div>
