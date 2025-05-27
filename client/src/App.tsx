@@ -10,6 +10,7 @@ import Register from "@/pages/register";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import Cart from "@/pages/cart";
+import Checkout from "@/pages/checkout";
 import Profile from "@/pages/profile";
 import VendorDashboard from "@/pages/vendor-dashboard";
 import VendorRegister from "@/pages/vendor-register";
@@ -32,6 +33,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/products" component={Products} />
           <Route path="/cart" component={Cart} />
+          <Route path="/checkout" component={Checkout} />
           <Route path="/profile" component={Profile} />
           <Route path="/vendor/dashboard" component={VendorDashboard} />
           <Route path="/vendor/register" component={VendorRegister} />
