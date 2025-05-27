@@ -13,6 +13,7 @@ import Cart from "@/pages/cart";
 import Profile from "@/pages/profile";
 import VendorDashboard from "@/pages/vendor-dashboard";
 import VendorRegister from "@/pages/vendor-register";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {

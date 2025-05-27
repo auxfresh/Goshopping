@@ -36,6 +36,7 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   phone: varchar("phone"),
   isVendor: boolean("is_vendor").default(false),
+  isAdmin: boolean("is_admin").default(false),
   googleId: varchar("google_id").unique(), // For Google OAuth
   emailVerified: boolean("email_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),

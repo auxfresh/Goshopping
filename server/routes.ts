@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated, hashPassword } from "./auth";
+import { setupAuth, isAuthenticated, isAdmin, hashPassword } from "./auth";
 import passport from "passport";
 import { z } from "zod";
 import { registerUserSchema, loginSchema } from "@shared/schema";
@@ -90,11 +90,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: user.firstName,
         lastName: user.lastName,
         isVendor: user.isVendor,
+        isAdmin: user.isAdmin,
         profileImageUrl: user.profileImageUrl
       });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Admin routes
+  app.get('/api/admin/stats', isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      const products = await storage.getProducts();
+      const orders = await storage.getAllOrders();
+      const categories = await storage.getCategories();
+
+      res.json({
+        totalUsers: users.length,
+        totalProducts: products.length,
+        totalOrders: orders.length,
+        totalCategories: categories.length,
+      });
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.get('/api/admin/users', isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get('/api/admin/products', isAdmin, async (req, res) => {
+    try {
+      const products = await storage.getProducts();
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.get('/api/admin/orders', isAdmin, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.patch('/api/admin/users/:id', isAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const updates = req.body;
+      const updatedUser = await storage.updateUser(userId, updates);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  app.patch('/api/admin/products/:id/toggle', isAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const { isActive } = req.body;
+      const updatedProduct = await storage.updateProduct(productId, { isActive });
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
     }
   });
 

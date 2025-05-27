@@ -130,6 +130,14 @@ export const isAuthenticated: RequestHandler = (req, res, next) => {
   res.status(401).json({ message: "Unauthorized" });
 };
 
+// Admin middleware
+export const isAdmin: RequestHandler = (req: any, res, next) => {
+  if (req.isAuthenticated() && req.user?.isAdmin) {
+    return next();
+  }
+  res.status(403).json({ message: "Admin access required" });
+};
+
 // Hash password utility
 export async function hashPassword(password: string): Promise<string> {
   const saltRounds = 12;
