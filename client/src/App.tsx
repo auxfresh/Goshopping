@@ -35,6 +35,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/vendor/dashboard" component={VendorDashboard} />
           <Route path="/vendor/register" component={VendorRegister} />
+          <Route path="/admin" component={AdminDashboard} />
         </>
       )}
       <Route component={NotFound} />

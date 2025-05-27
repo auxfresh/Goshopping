@@ -62,6 +62,7 @@ export interface IStorage {
   getOrders(userId: number): Promise<OrderWithDetails[]>;
   getVendorOrders(vendorId: number): Promise<OrderWithDetails[]>;
   getOrder(id: number): Promise<OrderWithDetails | undefined>;
+  getAllOrders(): Promise<OrderWithDetails[]>;
   
   // Address operations
   getAddresses(userId: number): Promise<Address[]>;
