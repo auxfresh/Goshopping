@@ -1,16 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupAuth } from "./auth";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Logging middleware
+// Logging middleware for /api routes
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: Record<string, any> | undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -25,11 +26,9 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-
       log(logLine);
     }
   });
@@ -37,42 +36,40 @@ app.use((req, res, next) => {
   next();
 });
 
-// Optional auth middleware setup (placeholder)
-// import { authMiddleware } from "./auth"; // Uncomment if you have auth middleware
-// Only apply auth to protected routes
-// app.use((req, res, next) => {
-//   const openPaths = ["/", "/cart", "/home", "/products"];
-//   if (openPaths.includes(req.path)) return next();
-//   return authMiddleware(req, res, next);
-// });
-
 (async () => {
+  // Setup authentication middleware (session, passport, strategies)
+  await setupAuth(app);
+
+  // Register your API routes here (make sure protected routes use isAuthenticated middleware)
   const server = await registerRoutes(app);
 
-  // Detailed error handler
-  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+  // Global error handler middleware
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
-    console.error(`❌ Error: ${message}`);
-    console.error(err.stack);
-
     res.status(status).json({ message });
+    // Optionally log error stack
+    console.error(err.stack || err);
   });
 
-  // Setup Vite or serve static depending on environment
+  // Setup Vite middleware in development mode for frontend hot reload
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
+    // Serve built static files in production
     serveStatic(app);
   }
 
+  // Listen on port 5000
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`🚀 Serving on http://localhost:${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    }
+  );
 })();
